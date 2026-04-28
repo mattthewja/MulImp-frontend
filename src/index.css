@@ -1,1 +1,36 @@
 @import url("./reset.css");
+
+:root {
+    /* BACKGROUND */
+    --bg-page: #2A5DB0;
+    --bg-page-dark: #1F4A90;
+
+    /* SURFACES */
+    --surface-1: #FFFFFF;
+    --surface-2: #e4e9f0;
+    --surface-dark-1: #0E2E95;
+    --surface-dark-2: #133F8C;
+
+    /* TEXT */
+    --text-primary: #161515;
+    --text-secondary: #68707b;
+    --text-inverse: #fefefe;
+
+    /* ACCENTS */
+    --accent-primary: #2C8DE7;
+    --accent-success: #53E237;
+    --accent-danger: #FF4D6D;
+
+    /* SKRIBBLIO COLOURS */
+    --red: #ED2B34;
+    --orange: #FF7B00;
+    --yellow: #FFFF1B;
+    --green: #67DB14;
+    --cyan: #00F2FF;
+    --blue: #4058F6;
+    --purple: #AB04F9;
+    --pink: #FF75DB;
+
+    /* STRUCTURE */
+    --border-subtle: rgba(23, 0, 0, 0.08);
+}
