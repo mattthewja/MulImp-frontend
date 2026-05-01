@@ -1,6 +1,11 @@
 import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import { joinLobby, createLobby } from '../../api/lobbyApi.ts'
+import { motion } from 'motion/react'
+
+import logo from '../../assets/logo.png'
+
+import './HomePage.css'
 
 export default function HomePage() {
     const [username, setUsername] = useState("");
@@ -37,8 +42,22 @@ export default function HomePage() {
         }
     }
 
-    return (<>
-        <div>
+    return (<div className="home-wrapper">
+        <div className="home-hero">
+            <motion.img src={logo} 
+            animate={{ 
+                x: [-25, 25],
+                scale: [.8, 1.2]
+            }}
+            transition={{
+                duration: 1,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+            }}
+            />
+        </div>
+        <div className="home-user-input">
             <input
             placeholder="Username"
             value={username}
@@ -47,7 +66,7 @@ export default function HomePage() {
             }}
             />
         </div>
-        <div>
+        <div className="home-lobby-input">
             <input
             placeholder="Lobby ID"
             value={lobbyId}
@@ -56,9 +75,9 @@ export default function HomePage() {
             }}
             />
         </div>
-        <div>
+        <div className="home-btns">
             <button onClick={handleCreate}>Create</button>
             <button onClick={handleJoin}>Join</button>
         </div>
-    </>)
+    </div>)
 }
