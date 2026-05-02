@@ -80,7 +80,6 @@ export default function LobbyPage() {
         await postVote(lobbyId, playerId, player)
     }
 
-
     // New iteration
     return (
         <div className="game-page">
