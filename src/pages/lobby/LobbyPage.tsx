@@ -45,56 +45,62 @@ export default function LobbyPage() {
         await startGame(lobbyId);
     }
 
-    if (!lobby) { // stop failure
+    async function handleSubmitAnswer() {
+        await postAnswer(lobbyId, sessionStorage.getItem("playerId"), answer)
+    }
+
+    async function handleVote(player: string) {
+        await postVote(lobbyId, sessionStorage.getItem("playerId"), player)
+    }
+
+    if (!lobby || !game || !data) { // stop failure
         return <p>Loading lobby...</p>
     }
 
-    return (<>
-        {/* // https://stackoverflow.com/questions/39501289/in-reactjs-how-to-copy-text-to-clipboard */}
-        <h1>{lobby.lobbyId}</h1>
+    return (
+        <div className="game-page">
+            {/* // https://stackoverflow.com/questions/39501289/in-reactjs-how-to-copy-text-to-clipboard */}
+            <h1>{lobby.lobbyId}</h1>
 
-        <ul>
-            {lobby.players.map((p: string) => (
-                <li key={p}>{p}</li>
-            ))}
-        </ul>
+            <ul>
+                {lobby.players.map((p: string) => (
+                    <li key={p}>{p}</li>
+                ))}
+            </ul>
 
-        {game?.gameState === "IN_LOBBY" && (<>
-            <button onClick={handleLeave}>leave</button>
-            <button onClick={handleStart}>start</button>
-        </>)}
+            {game?.gameState === "IN_LOBBY" && (<>
+                <button onClick={handleLeave}>leave</button>
+                <button onClick={handleStart}>start</button>
+            </>)}
 
-        {game?.gameState === "ANSWERING" && (<>
-            <p>Question: {data?.question}</p>
-            <input value={answer} onChange={(event) => {
-                setAnswer(event.target.value);
-            }} />
-            <button onClick={() => {
-                postAnswer(lobbyId, sessionStorage.getItem("playerId"), answer)
-            }}>Submit Answer</button>
-        </>)}
+            {game?.gameState === "ANSWERING" && (<>
+                <p>Question: {data?.question}</p>
+                <input value={answer} onChange={(event) => {
+                    setAnswer(event.target.value);
+                }} />
+                <button onClick={() => handleSubmitAnswer()}>Submit Answer</button>
+            </>)}
 
-        {game?.gameState === "DISCUSSION" && (<>
-            <p>Real Question: {data?.question}</p>
-            <h2>Answers</h2>
-            {game.answers.map((answer) => (
-                <p key={answer.username}>
-                    {/* make a card for this in making it look good */}
-                    <strong>{answer.username}:</strong> {answer.answer}
-                </p>
-            ))}
-            <h2>Vote</h2>
-            {game.players.map((player) => (
-                <button key={player} onClick={() => {
-                    postVote(lobbyId, sessionStorage.getItem("playerId"), player)
-                }}>Vote {player}</button>
-            ))}
-        </>)}
+            {game?.gameState === "DISCUSSION" && (<>
+                <p>Real Question: {data?.question}</p>
+                <h2>Answers</h2>
+                {game.answers.map((answer) => (
+                    <p key={answer.username}>
+                        {/* make a card for this in making it look good */}
+                        <strong>{answer.username}:</strong> {answer.answer}
+                    </p>
+                ))}
+                <h2>Vote</h2>
+                {game.players.map((player) => (
+                    <button key={player} onClick={() => handleVote(player)}>Vote {player}</button>
+                ))}
+            </>)}
 
-        {game?.gameState === "RESULTS" && (<>
-            <h2>Results</h2>
-            <p>Imposter: {game.gameResult.imposterName}</p>
-            <p>Voted out: {game.gameResult.votedOutName}</p>
-        </>)}
-    </>)
+            {game?.gameState === "RESULTS" && (<>
+                <h2>Results</h2>
+                <p>Imposter: {game.gameResult.imposterName}</p>
+                <p>Voted out: {game.gameResult.votedOutName}</p>
+            </>)}
+        </div>
+    )
 }
