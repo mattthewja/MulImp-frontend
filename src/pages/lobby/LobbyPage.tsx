@@ -4,7 +4,9 @@ import { getLobby, leaveLobby } from '../../api/lobbyApi.ts'
 import { startGame, getState, getPlayerState, postAnswer, postVote } from '../../api/gameApi.ts'
 import { motion, AnimatePresence } from 'motion/react';
 
-import './LobbyPage.css'
+import './LobbyPage.css';
+
+import PlayerList from './components/PlayerList.tsx'
 
 export default function LobbyPage() {
     const { lobbyId } = useParams();
@@ -69,8 +71,13 @@ export default function LobbyPage() {
             <section className="game-wrapper">
                 <header className="game-header">
                     <div>
-                        <p className="lobby-lobby-id-label">Lobby ID</p>
-                        <h1>{lobby.lobbyId}</h1>
+                        <p className="game-lobby-id-label">Lobby ID</p>
+                        <div className="game-lobby-id-card">
+                            <h1>{lobby.lobbyId}</h1>
+                            <button onClick={() => {
+                                navigator.clipboard.writeText(lobbyId)
+                            }}>📋</button>
+                        </div>
                     </div>
 
                     <div className="game-phase-card">
@@ -82,43 +89,7 @@ export default function LobbyPage() {
                     <aside className="game-card players-card">
                         <h2>Players</h2>
                         {/* https://theodorusclarence.com/blog/list-animation */}
-                        <div className="lobby-player-wrapper">
-                            <AnimatePresence initial={false}>
-                                {lobby.players.map((p: string) => (
-                                    <motion.div
-                                        key={p}
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.2, ease: 'easeOut' }}
-                                    >
-                                        <motion.div className="lobby-player-card"
-                                            initial={{
-                                                opacity: 0,
-                                                y: -8,
-                                                scale: 0.98,
-                                                filter: 'blur(4px)'
-                                            }}
-                                            animate={{
-                                                opacity: 1,
-                                                y: 0,
-                                                scale: 1,
-                                                filter: 'blur(0px)'
-                                            }}
-                                            exit={{
-                                                opacity: 0,
-                                                y: 8,
-                                                scale: 0.98,
-                                                filter: 'blur(4px)'
-                                            }}
-                                            transition={{ duration: 0.15, ease: 'easeOut' }}
-                                        >
-                                            <p className="lobby-player-card-text">{p}</p>
-                                        </motion.div>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </div>
+                        <PlayerList players={lobby.players} />
                     </aside>
 
                     <section className="game-card main-card">

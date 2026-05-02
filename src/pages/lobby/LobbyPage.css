@@ -10,6 +10,11 @@
     padding-top: 3vh;
 }
 
+.game-lobby-id-card {
+    display: flex;
+    flex-direction: row;
+}
+
 .game-grid {
 
 }
