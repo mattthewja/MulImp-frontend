@@ -20,7 +20,7 @@ export default function LobbyPage() {
         async function load() {
             const lobbyData = await getLobby(lobbyId);
             const gameData = await getState(lobbyId);
-            const playerData = await getPlayerState(lobbyId, localStorage.getItem("playerId"));
+            const playerData = await getPlayerState(lobbyId, sessionStorage.getItem("playerId"));
             setLobby(lobbyData);
             setGame(gameData);
             setData(playerData);
@@ -32,16 +32,16 @@ export default function LobbyPage() {
     }, [lobbyId]);
 
     async function handleLeave() {
-        const playerId = localStorage.getItem("playerId");
+        const playerId = sessionStorage.getItem("playerId");
 
         await leaveLobby(lobbyId, playerId);
 
-        localStorage.removeItem("playerId");
+        sessionStorage.removeItem("playerId");
         navigate("/")
     }
 
     async function handleStart() {
-        // const playerId = localStorage.getItem("playerId");
+        // const playerId = sessionStorage.getItem("playerId");
         await startGame(lobbyId);
     }
 
@@ -50,7 +50,7 @@ export default function LobbyPage() {
     }
 
     return (<>
-        // https://stackoverflow.com/questions/39501289/in-reactjs-how-to-copy-text-to-clipboard
+        {/* // https://stackoverflow.com/questions/39501289/in-reactjs-how-to-copy-text-to-clipboard */}
         <h1>{lobby.lobbyId}</h1>
 
         <ul>
@@ -70,11 +70,12 @@ export default function LobbyPage() {
                 setAnswer(event.target.value);
             }} />
             <button onClick={() => {
-                postAnswer(lobbyId, localStorage.getItem("playerId"), answer)
+                postAnswer(lobbyId, sessionStorage.getItem("playerId"), answer)
             }}>Submit Answer</button>
         </>)}
 
         {game?.gameState === "DISCUSSION" && (<>
+            <p>Real Question: {data?.question}</p>
             <h2>Answers</h2>
             {game.answers.map((answer) => (
                 <p key={answer.username}>
@@ -85,7 +86,7 @@ export default function LobbyPage() {
             <h2>Vote</h2>
             {game.players.map((player) => (
                 <button key={player} onClick={() => {
-                    postVote(lobbyId, localStorage.getItem("playerId"), player)
+                    postVote(lobbyId, sessionStorage.getItem("playerId"), player)
                 }}>Vote {player}</button>
             ))}
         </>)}
