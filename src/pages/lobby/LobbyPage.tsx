@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router';
 import { getLobby, leaveLobby } from '../../api/lobbyApi.ts'
 import { startGame, getState, getPlayerState, postAnswer, postVote } from '../../api/gameApi.ts'
+import { motion, AnimatePresence } from 'motion/react';
 
 import './LobbyPage.css'
 
@@ -56,7 +57,10 @@ export default function LobbyPage() {
     }
 
     if (!lobby || !game || !data) { // stop failure
-        return <p>Loading lobby...</p>
+        return (<div>
+            <p>Loading lobby...</p>
+            <p>Click to return to main menu</p>
+        </div>)
     }
 
     // New iteration
@@ -65,7 +69,7 @@ export default function LobbyPage() {
             <section className="game-wrapper">
                 <header className="game-header">
                     <div>
-                        <p className="lobby-lobby-id-label"></p>
+                        <p className="lobby-lobby-id-label">Lobby ID</p>
                         <h1>{lobby.lobbyId}</h1>
                     </div>
 
@@ -77,11 +81,44 @@ export default function LobbyPage() {
                 <section className="game-grid">
                     <aside className="game-card players-card">
                         <h2>Players</h2>
-                        <ul>
-                            {lobby.players.map((p: string) => (
-                                <li key={p}>{p}</li>
-                            ))}
-                        </ul>
+                        {/* https://theodorusclarence.com/blog/list-animation */}
+                        <div className="lobby-player-wrapper">
+                            <AnimatePresence initial={false}>
+                                {lobby.players.map((p: string) => (
+                                    <motion.div
+                                        key={p}
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                                    >
+                                        <motion.div className="lobby-player-card"
+                                            initial={{
+                                                opacity: 0,
+                                                y: -8,
+                                                scale: 0.98,
+                                                filter: 'blur(4px)'
+                                            }}
+                                            animate={{
+                                                opacity: 1,
+                                                y: 0,
+                                                scale: 1,
+                                                filter: 'blur(0px)'
+                                            }}
+                                            exit={{
+                                                opacity: 0,
+                                                y: 8,
+                                                scale: 0.98,
+                                                filter: 'blur(4px)'
+                                            }}
+                                            transition={{ duration: 0.15, ease: 'easeOut' }}
+                                        >
+                                            <p className="lobby-player-card-text">{p}</p>
+                                        </motion.div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
                     </aside>
 
                     <section className="game-card main-card">

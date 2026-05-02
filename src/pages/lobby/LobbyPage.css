@@ -1,0 +1,19 @@
+.game-page {
+
+}
+
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-top: 3vh;
+}
+
+.game-grid {
+
+}
+
+.game-card {
+
+}
