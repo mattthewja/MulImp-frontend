@@ -3,6 +3,18 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    margin-top: 5vh;
+}
+
+.home-hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 1fr);
+    place-items: center;
+}
+.home-logo {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
 }
 
 .error-card {
@@ -13,12 +25,68 @@
     font-weight: bold;
 }
 
+.home-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 1em;
+    background-color: var(--surface-dark-1);
+    border: 3px solid var(--border-subtle);
+    border-radius: 4px;
+}
+
 .home-btns {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 10px
 }
 
 .home-btns button {
-    
+    border: solid 3px var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-inverse);
+    text-shadow: 2px 2px var(--text-secondary);
+    font-size: large;
+}
+
+.home-create-btn {
+    background-color: var(--accent-success);
+    font-weight: bold;
+}
+
+.home-join-btn {
+    background-color: var(--accent-primary);
+}
+
+/* --------------------------------- footer --------------------------------- */
+.home-footer {
+    background-color: var(--surface-dark-2);
+}
+
+.home-footer-how-to-grid {
+    display: grid;
+    margin-top: 15vh;
+    padding: 2em 10em;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    justify-content: center;
+}
+
+.home-footer-card {
+    padding: .5em 1em;
+    border: 3px solid var(--border-subtle);
+    background-color: var(--surface-dark-1);
+    color: var(--text-inverse-secondary);
+    margin: 1em;
+
+    border-radius: 4px;
+}
+
+.home-footer-card h3 {
+    color: var(--text-inverse);
+}
+
+.attribution {
+    text-align: center;
+    color: var(--text-inverse-secondary)
 }

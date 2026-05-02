@@ -3,22 +3,146 @@
 }
 
 .game-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative;
+    display: inline-block;
     gap: 20px;
-    padding-top: 3vh;
+    margin-top: 5vh;
+    padding: 1em;
+    background-color: var(--surface-2);
+    left: 50%;
+    transform: translateX(-50%);
+    max-height: 90vh;
+    max-width: 50%;
+    border-radius: 4px;
+
+    overflow: scroll;
 }
 
 .game-lobby-id-card {
     display: flex;
     flex-direction: row;
+    background-color: var(--surface-1);
+    border-radius: 4px;
+    border: solid 1px var(--border-subtle);
+    padding: 0 1em;
+    margin: 1em 0;
+
+    overflow-wrap: anywhere;
+    word-break:break-all;
+    white-space: normal;
+}
+
+.game-copy-btn {
+    align-self: center;
+    aspect-ratio: 1 / 1;
+    margin-left: 1em;
+}
+
+.game-player-wrapper {
+    background-color: var(--surface-1);
+    border: solid 1px var(--border-subtle);
+}
+.game-player-card {
+    border: solid 1px var(--border-subtle);
+    padding: 0 1em;
 }
 
 .game-grid {
-
+    margin-top: 10px;
 }
 
-.game-card {
+.game-btn-row {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+.game-leave-btn {
+    background-color: var(--accent-danger);
+}
+.game-start-btn {
+    background-color: var(--accent-primary);
+    font-weight: bold;
+}
 
+.game-btn-row button {
+    border: solid 3px var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-inverse);
+    text-shadow: 2px 2px var(--text-secondary);
+    font-size: large;
+}
+
+.main-card {
+    margin-top: 1em;
+}
+
+/* -------------------------------- ANSWERING ------------------------------- */
+.game-answer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.game-form-submit-btn {
+    background-color: var(--accent-primary);
+    border: solid 3px var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-inverse);
+    text-shadow: 2px 2px var(--text-secondary);
+    font-size: large;
+}
+.game-form-submit-btn:disabled {
+    color: var(--text-inverse-secondary);
+    filter: grayscale(20%)
+}
+
+/* ------------------------------- DISCUSSION ------------------------------- */
+.game-answer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.game-answer-card {
+    border: solid 3px var(--border-subtle);
+    background-color: var(--surface-1);
+    padding: .5em;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1em;
+    gap: .5em
+}
+
+.game-answer-text {
+    border-top: 3px solid var(--border-subtle);
+}
+
+.game-vote-btn {
+    background-color: var(--accent-primary);
+    border: solid 3px var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-inverse);
+    text-shadow: 2px 2px var(--text-secondary);
+}
+
+/* --------------------------------- RESULTS -------------------------------- */
+.game-result-bool {
+    background-color: var(--surface-1);
+    padding: 1em;
+    margin-top: 1em;
+
+    border-radius: 4px;
+    color: var(--text-inverse);
+    text-shadow: 2px 2px var(--text-secondary);
+    text-align: center;
+
+    font-weight: bold;
+    font-size: large;
+}
+
+.game-green {
+    background-color: var(--accent-success);
+}
+.game-red {
+    background-color: var(--accent-danger)
 }

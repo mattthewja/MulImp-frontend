@@ -37,6 +37,12 @@ export default function LobbyPage() {
         return () => clearInterval(id);
     }, [lobbyId]);
 
+    useEffect(() => {
+        if (game?.gameState === "ANSWERING") {
+            setAnswer("");
+        }
+    }, [game?.gameState]);
+
     async function handleLeave() {
         const playerId = sessionStorage.getItem("playerId");
 
@@ -61,8 +67,9 @@ export default function LobbyPage() {
 
     if (!lobby || !game || !data) { // stop failure
         return (<div>
-            <p>Loading lobby...</p>
-            <p>Click to return to main menu</p>
+            <h1>Loading game state...</h1>
+            <p>If this page does not load after 5 seconds, please return and try again.</p>
+            <button className="loading-page-return" onClick={() => navigate("/")}>Click to return to main menu</button>
         </div>)
     }
 
@@ -75,22 +82,27 @@ export default function LobbyPage() {
                         <p className="game-lobby-id-label">Lobby ID</p>
                         <div className="game-lobby-id-card">
                             <h1>{lobby.lobbyId}</h1>
-                            <button onClick={() => {
-                                navigator.clipboard.writeText(lobbyId)
-                            }}>📋</button>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="game-copy-btn" onClick={() => {
+                                    navigator.clipboard.writeText(lobbyId)
+                                }}>📋</motion.button>
                         </div>
                     </div>
 
                     <div className="game-phase-card">
-                        {game.gameState.replace("_", " ")}
+                        <p>{game.gameState.replace("_", " ")}...</p>
                     </div>
                 </header>
 
                 <section className="game-grid">
                     <aside className="game-card players-card">
-                        <h2>Players</h2>
-                        {/* https://theodorusclarence.com/blog/list-animation */}
-                        <PlayerList players={lobby.players} />
+                        {!(game.gameState === "DISCUSSION") && (<>
+                            <h2>Players</h2>
+                            {/* https://theodorusclarence.com/blog/list-animation */}
+                            <PlayerList players={lobby.players} />
+                        </>)}
                     </aside>
 
                     <section className="game-card main-card">
@@ -100,49 +112,42 @@ export default function LobbyPage() {
                                 Start when everyone has joined!
                             </p>
 
-                            <div className="game-button-row">
-                                <button onClick={handleLeave}>Leave</button>
+                            <div className="game-btn-row">
                                 {/* just realised, forgot to add check for owner for starting game... */}
-                                <button onClick={handleStart}>Start</button>
+                                <motion.button
+                                    whileHover={{ scale: 1.025 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    className="game-start-btn dim-hover" onClick={handleStart}>Start</motion.button>
+                                <motion.button
+                                    whileHover={{ scale: 1.025 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    className="game-leave-btn dim-hover" onClick={handleLeave}>Leave</motion.button>
                             </div>
                         </>)}
 
                         {game.gameState === "ANSWERING" && (<>
                             <h2>{data.question}</h2>
                             <div className="game-answer-form">
-                                <input
+                                <input className="game-form-answer-box dim-hover"
                                     value={answer}
                                     disabled={data.hasAnswered}
                                     placeholder="Type your answer..."
                                     onChange={(event) => setAnswer(event.target.value)}
                                 />
 
-                                <button
+                                <motion.button className="game-form-submit-btn dim-hover"
+                                    whileTap={{ scale: .9 }}
                                     disabled={data.hasAnswered || !answer.trim()}
                                     onClick={handleSubmitAnswer}
                                 >
-                                    {data.hasAnswered ? "Answer Submitted" : "Submit Answer"}
-                                </button>
+                                    {data.hasAnswered ? "Answer Submitted..." : "Submit Answer"}
+                                </motion.button>
                             </div>
                         </>)}
 
                         {game.gameState === "DISCUSSION" && (<>
                             <h2>Real Question: {data.question}</h2>
-                            <AnswerList answers={game.answers} />
-
-                            <h3>Vote</h3>
-                            <div className="game-vote-grid">
-                                {game.players.map((player: string) => (
-                                    <button
-                                        className="vote-button"
-                                        key={player}
-                                        disabled={data.hasVoted}
-                                        onClick={() => handleVote(player)}
-                                    >
-                                        {player}
-                                    </button>
-                                ))}
-                            </div>
+                            <AnswerList answers={game.answers} onVote={handleVote} hasVoted={data.hasVoted}/>
                         </>)}
 
                         {game.gameState === "RESULTS" && (<>
@@ -158,59 +163,17 @@ export default function LobbyPage() {
                                     <span>Voted Out: </span>
                                     <strong>{game.gameResult.votedOutName}</strong>
                                 </p>
+                                <div className={
+                                    game.gameResult.imposterName === game.gameResult.votedOutName
+                                    ? "game-result-bool game-green" : "game-result-bool game-red"}>
+                                    {game.gameResult.imposterName === game.gameResult.votedOutName
+                                    ? "Imposter Voted Out!" : "Imposter Got Away!"}
+                                </div>
                             </div>
                         </>)}
                     </section>
                 </section>
             </section>
-        </div>
-    )
-
-    // old version
-    return (
-        <div className="game-page">
-            {/* // https://stackoverflow.com/questions/39501289/in-reactjs-how-to-copy-text-to-clipboard */}
-            <h1>{lobby.lobbyId}</h1>
-
-            <ul>
-                {lobby.players.map((p: string) => (
-                    <li key={p}>{p}</li>
-                ))}
-            </ul>
-
-            {game?.gameState === "IN_LOBBY" && (<>
-                <button onClick={handleLeave}>leave</button>
-                <button onClick={handleStart}>start</button>
-            </>)}
-
-            {game?.gameState === "ANSWERING" && (<>
-                <p>Question: {data?.question}</p>
-                <input value={answer} onChange={(event) => {
-                    setAnswer(event.target.value);
-                }} />
-                <button onClick={() => handleSubmitAnswer()}>Submit Answer</button>
-            </>)}
-
-            {game?.gameState === "DISCUSSION" && (<>
-                <p>Real Question: {data?.question}</p>
-                <h2>Answers</h2>
-                {game.answers.map((answer) => (
-                    <p key={answer.username}>
-                        {/* make a card for this in making it look good */}
-                        <strong>{answer.username}:</strong> {answer.answer}
-                    </p>
-                ))}
-                <h2>Vote</h2>
-                {game.players.map((player) => (
-                    <button key={player} onClick={() => handleVote(player)}>Vote {player}</button>
-                ))}
-            </>)}
-
-            {game?.gameState === "RESULTS" && (<>
-                <h2>Results</h2>
-                <p>Imposter: {game.gameResult.imposterName}</p>
-                <p>Voted out: {game.gameResult.votedOutName}</p>
-            </>)}
         </div>
     )
 }

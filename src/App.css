@@ -10,3 +10,7 @@ body {
 .muted {
     color: var(--text-secondary);
 }
+
+.dim-hover:hover {
+    filter: brightness(85%);
+}
