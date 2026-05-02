@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router';
 import { getLobby, leaveLobby } from '../../api/lobbyApi.ts'
 import { startGame, getState, getPlayerState, postAnswer, postVote } from '../../api/gameApi.ts'
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 
 import './LobbyPage.css';
 
@@ -11,6 +11,7 @@ import AnswerList from './components/AnswerList.tsx'
 
 export default function LobbyPage() {
     const { lobbyId } = useParams();
+    const playerId = sessionStorage.getItem("playerId");
     const [lobby, setLobby] = useState<any>(null);
     const [game, setGame] = useState<any>(null);
     const [data, setData] = useState<any>(null);
@@ -21,12 +22,12 @@ export default function LobbyPage() {
     // https://dev.to/tangoindiamango/polling-in-react-3h8a
     //https://medium.com/@sfcofc/implementing-polling-in-react-a-guide-for-efficient-real-time-data-fetching-47f0887c54a7
     useEffect(() => {
-        if (!lobbyId) return;
+        if (!lobbyId || !playerId) return;
 
         async function load() {
-            const lobbyData = await getLobby(lobbyId);
-            const gameData = await getState(lobbyId);
-            const playerData = await getPlayerState(lobbyId, sessionStorage.getItem("playerId"));
+            const lobbyData = await getLobby(lobbyId!);
+            const gameData = await getState(lobbyId!);
+            const playerData = await getPlayerState(lobbyId!, playerId!);
             setLobby(lobbyData);
             setGame(gameData);
             setData(playerData);
@@ -43,10 +44,18 @@ export default function LobbyPage() {
         }
     }, [game?.gameState]);
 
-    async function handleLeave() {
-        const playerId = sessionStorage.getItem("playerId");
+    if (!lobbyId || !playerId || !lobby || !game || !data) { // stop failure
+        return (<div>
+            <h1>Loading game state...</h1>
+            <p>If this page does not load after 5 seconds, please return and try again.</p>
+            <button className="loading-page-return" onClick={() => navigate("/")}>Click to return to main menu</button>
+        </div>)
+    }
 
-        await leaveLobby(lobbyId, playerId);
+    async function handleLeave() {
+        if (lobbyId && playerId) {
+            await leaveLobby(lobbyId!, playerId!);
+        }
 
         sessionStorage.removeItem("playerId");
         navigate("/")
@@ -54,24 +63,23 @@ export default function LobbyPage() {
 
     async function handleStart() {
         // const playerId = sessionStorage.getItem("playerId");
-        await startGame(lobbyId);
+        if (lobbyId) {
+            await startGame(lobbyId);
+        }
     }
 
     async function handleSubmitAnswer() {
-        await postAnswer(lobbyId, sessionStorage.getItem("playerId"), answer.trim())
+        setData((prev: any) => ({ ...prev, hasAnswered: true }));
+        if (!lobbyId || !playerId) return;
+        await postAnswer(lobbyId, playerId, answer.trim())
     }
 
     async function handleVote(player: string) {
-        await postVote(lobbyId, sessionStorage.getItem("playerId"), player)
+        setData((prev: any) => ({ ...prev, hasVoted: true }))
+        if (!lobbyId || !playerId) return;
+        await postVote(lobbyId, playerId, player)
     }
 
-    if (!lobby || !game || !data) { // stop failure
-        return (<div>
-            <h1>Loading game state...</h1>
-            <p>If this page does not load after 5 seconds, please return and try again.</p>
-            <button className="loading-page-return" onClick={() => navigate("/")}>Click to return to main menu</button>
-        </div>)
-    }
 
     // New iteration
     return (
@@ -86,7 +94,7 @@ export default function LobbyPage() {
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 className="game-copy-btn" onClick={() => {
-                                    navigator.clipboard.writeText(lobbyId)
+                                    navigator.clipboard.writeText(lobby.lobbyId)
                                 }}>📋</motion.button>
                         </div>
                     </div>
@@ -147,7 +155,7 @@ export default function LobbyPage() {
 
                         {game.gameState === "DISCUSSION" && (<>
                             <h2>Real Question: {data.question}</h2>
-                            <AnswerList answers={game.answers} onVote={handleVote} hasVoted={data.hasVoted}/>
+                            <AnswerList answers={game.answers} onVote={handleVote} hasVoted={data.hasVoted} />
                         </>)}
 
                         {game.gameState === "RESULTS" && (<>
@@ -165,9 +173,9 @@ export default function LobbyPage() {
                                 </p>
                                 <div className={
                                     game.gameResult.imposterName === game.gameResult.votedOutName
-                                    ? "game-result-bool game-green" : "game-result-bool game-red"}>
+                                        ? "game-result-bool game-green" : "game-result-bool game-red"}>
                                     {game.gameResult.imposterName === game.gameResult.votedOutName
-                                    ? "Imposter Voted Out!" : "Imposter Got Away!"}
+                                        ? "Imposter Voted Out!" : "Imposter Got Away!"}
                                 </div>
                             </div>
                         </>)}
