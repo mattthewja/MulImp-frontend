@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router';
 import { getLobby, leaveLobby } from '../../api/lobbyApi.ts'
 import { startGame, getState, getPlayerState, postAnswer, postVote } from '../../api/gameApi.ts'
 
+import './LobbyPage.css'
+
 export default function LobbyPage() {
     const { lobbyId } = useParams();
     const [lobby, setLobby] = useState<any>(null);
@@ -57,6 +59,40 @@ export default function LobbyPage() {
         return <p>Loading lobby...</p>
     }
 
+    // New iteration
+    return (
+        <div className="game-page">
+            <section className="game-wrapper">
+                <header className="game-header">
+                    <div>
+                        <p className="lobby-lobby-id-label"></p>
+                        <h1>{lobby.lobbyId}</h1>
+                    </div>
+
+                    <div className="game-phase-card">
+                        {game.gameState.replace("_", " ")}
+                    </div>
+                </header>
+
+                <section className="game-grid">
+                    <aside className="game-card players-card">
+                        <h2>Players</h2>
+                        <ul>
+                            {lobby.players.map((p: string) => (
+                                <li key={p}>{p}</li>
+                            ))}
+                        </ul>
+                    </aside>
+
+                    <section className="game-card main-card">
+
+                    </section>
+                </section>
+            </section>
+        </div>
+    )
+
+    // old version
     return (
         <div className="game-page">
             {/* // https://stackoverflow.com/questions/39501289/in-reactjs-how-to-copy-text-to-clipboard */}
