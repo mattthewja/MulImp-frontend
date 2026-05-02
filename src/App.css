@@ -6,3 +6,7 @@ body {
 .light-text {
     color: var(--text-inverse);
 }
+
+.muted {
+    color: var(--text-secondary);
+}

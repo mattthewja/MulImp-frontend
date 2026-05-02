@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import './LobbyPage.css';
 
 import PlayerList from './components/PlayerList.tsx'
+import AnswerList from './components/AnswerList.tsx'
 
 export default function LobbyPage() {
     const { lobbyId } = useParams();
@@ -51,7 +52,7 @@ export default function LobbyPage() {
     }
 
     async function handleSubmitAnswer() {
-        await postAnswer(lobbyId, sessionStorage.getItem("playerId"), answer)
+        await postAnswer(lobbyId, sessionStorage.getItem("playerId"), answer.trim())
     }
 
     async function handleVote(player: string) {
@@ -93,7 +94,72 @@ export default function LobbyPage() {
                     </aside>
 
                     <section className="game-card main-card">
+                        {game.gameState === "IN_LOBBY" && (<>
+                            <h2>Ready to find the Imposter?</h2>
+                            <p className="muted">Share the lobby code with other players.
+                                Start when everyone has joined!
+                            </p>
 
+                            <div className="game-button-row">
+                                <button onClick={handleLeave}>Leave</button>
+                                {/* just realised, forgot to add check for owner for starting game... */}
+                                <button onClick={handleStart}>Start</button>
+                            </div>
+                        </>)}
+
+                        {game.gameState === "ANSWERING" && (<>
+                            <h2>{data.question}</h2>
+                            <div className="game-answer-form">
+                                <input
+                                    value={answer}
+                                    disabled={data.hasAnswered}
+                                    placeholder="Type your answer..."
+                                    onChange={(event) => setAnswer(event.target.value)}
+                                />
+
+                                <button
+                                    disabled={data.hasAnswered || !answer.trim()}
+                                    onClick={handleSubmitAnswer}
+                                >
+                                    {data.hasAnswered ? "Answer Submitted" : "Submit Answer"}
+                                </button>
+                            </div>
+                        </>)}
+
+                        {game.gameState === "DISCUSSION" && (<>
+                            <h2>Real Question: {data.question}</h2>
+                            <AnswerList answers={game.answers} />
+
+                            <h3>Vote</h3>
+                            <div className="game-vote-grid">
+                                {game.players.map((player: string) => (
+                                    <button
+                                        className="vote-button"
+                                        key={player}
+                                        disabled={data.hasVoted}
+                                        onClick={() => handleVote(player)}
+                                    >
+                                        {player}
+                                    </button>
+                                ))}
+                            </div>
+                        </>)}
+
+                        {game.gameState === "RESULTS" && (<>
+                            <h2>Game Over</h2>
+
+                            <div className="game-result-box">
+                                <p>
+                                    <span>Imposter: </span>
+                                    <strong>{game.gameResult.imposterName}</strong>
+                                </p>
+
+                                <p>
+                                    <span>Voted Out: </span>
+                                    <strong>{game.gameResult.votedOutName}</strong>
+                                </p>
+                            </div>
+                        </>)}
                     </section>
                 </section>
             </section>
